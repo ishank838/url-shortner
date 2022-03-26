@@ -1,10 +1,39 @@
 package handler
 
-import "net/http"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"url-shortner/model"
+	"url-shortner/service/url"
+
+	validator "gopkg.in/go-playground/validator.v9"
+)
 
 func ShortenUrl() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("shorten url called"))
+
+		var urlReq model.ShortenRequest
+
+		err := json.NewDecoder(r.Body).Decode(&urlReq)
+
+		if err != nil {
+			WriteErrorResponse(w, http.StatusBadRequest, fmt.Errorf("invalid request"))
+		}
+
+		v := validator.New()
+		err = v.Struct(urlReq)
+		if err != nil {
+			WriteErrorResponse(w, http.StatusBadRequest, err)
+		}
+
+		resp, err := url.ShortenUrl(urlReq)
+
+		if err != nil {
+			WriteErrorResponse(w, http.StatusInternalServerError, err)
+		}
+
+		RespondWithJson(w, resp)
 	}
 }
 

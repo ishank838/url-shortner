@@ -9,6 +9,7 @@ func GenerateKey(url string) string {
 	hash := makeHash(url)
 
 	key := base64.StdEncoding.EncodeToString(hash)
+
 	return key
 }
 
