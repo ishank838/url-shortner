@@ -7,6 +7,7 @@ import (
 	"url-shortner/model"
 	"url-shortner/service/url"
 
+	"github.com/gorilla/mux"
 	validator "gopkg.in/go-playground/validator.v9"
 )
 
@@ -42,6 +43,17 @@ func ShortenUrl() http.HandlerFunc {
 
 func ResolveUrl() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("resolve url called"))
+		vars := mux.Vars(r)
+
+		short := vars["shorten_key"]
+
+		url, err := url.ResolveUrl(short)
+
+		if err != nil {
+			WriteErrorResponse(w, http.StatusBadRequest, err)
+			return
+		}
+
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
 	}
 }

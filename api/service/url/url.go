@@ -1,8 +1,11 @@
 package url
 
 import (
+	"fmt"
 	"url-shortner/model"
 	keygenerator "url-shortner/pkg/keyGenerator"
+
+	"github.com/go-redis/redis/v8"
 )
 
 func ShortenUrl(url model.ShortenRequest) (*model.ShortenResponse, error) {
@@ -25,6 +28,21 @@ func ShortenUrl(url model.ShortenRequest) (*model.ShortenResponse, error) {
 		Url:        url.Url,
 		ShortenUrl: buildShortenUrl(key),
 	}, nil
+}
+
+func ResolveUrl(hash string) (string, error) {
+
+	resp, err := getUrl(hash)
+
+	if err == redis.Nil {
+		return "", fmt.Errorf("invalid url")
+	}
+
+	if err != nil {
+		return "", fmt.Errorf("error at resolve url")
+	}
+
+	return resp, nil
 }
 
 func buildShortenUrl(hash string) string {
