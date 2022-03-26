@@ -13,12 +13,12 @@ type AppConfig struct {
 }
 
 type WebConfig struct {
-	Port string `default:8080`
+	Port string `default:"8080"`
 }
 
 type DbConfig struct {
-	Port    string `default:6379`
-	Address string `default:localhost`
+	Port    string `default:"6379"`
+	Address string `default:"localhost:6379"`
 }
 
 var envFile = "local.env"
