@@ -37,3 +37,20 @@ func InitRedisDb(dbConfig config.DbConfig) error {
 	}
 	return nil
 }
+
+func (db *DbRedis) SetValue(key string, value interface{}) error {
+	conn := db.rdbClient.Conn(context.TODO())
+	defer conn.Close()
+
+	_, err := conn.Set(context.TODO(), key, value, 0).Result()
+	return err
+}
+
+func (db *DbRedis) GetValue(key string) (string, error) {
+	conn := db.rdbClient.Conn(context.TODO())
+	defer conn.Close()
+
+	res, err := conn.Get(context.TODO(), key).Result()
+
+	return res, err
+}
