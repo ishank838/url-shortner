@@ -19,18 +19,21 @@ func ShortenUrl() http.HandlerFunc {
 
 		if err != nil {
 			WriteErrorResponse(w, http.StatusBadRequest, fmt.Errorf("invalid request"))
+			return
 		}
 
 		v := validator.New()
 		err = v.Struct(urlReq)
 		if err != nil {
-			WriteErrorResponse(w, http.StatusBadRequest, err)
+			WriteErrorResponse(w, http.StatusBadRequest, fmt.Errorf("invalid data: %v", err))
+			return
 		}
 
 		resp, err := url.ShortenUrl(urlReq)
 
 		if err != nil {
 			WriteErrorResponse(w, http.StatusInternalServerError, err)
+			return
 		}
 
 		RespondWithJson(w, resp)
